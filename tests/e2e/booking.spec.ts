@@ -34,16 +34,15 @@ test("visitor calculates a price and stores a request", async ({ page, request }
   const form = page.locator("#request");
   await expect(form.locator("select").first()).toHaveValue("movers");
   await form.getByLabel("Име", { exact: true }).fill("Мария Георгиева");
-  await form.getByLabel("Телефон").fill("0888 123 456");
-  await form.getByLabel("Адрес / район в София").fill("Младост 1");
-  await form.getByLabel("Предпочитана дата").fill(futureDate());
-  await form.getByRole("checkbox").check();
-  await expect(page.getByTestId("turnstile-status")).toHaveText("ready");
+  await form.getByLabel("Телефон", { exact: true }).fill("0888 123 456");
+  await form.getByLabel("Адрес или район", { exact: true }).fill("Младост 1");
+  await form.getByLabel("Желана дата", { exact: true }).fill(futureDate());
+  await expect(page.getByTestId("turnstile-status")).toHaveText("ready", { timeout: 20_000 });
   await form.getByRole("button", { name: "Изпрати заявка" }).click();
 
   const reference = (await page.getByTestId("reference-number").textContent())?.trim() ?? "";
   expect(reference).toMatch(/^PM-\d{6}-/);
-  await expect(page.getByRole("heading", { name: "Получихме заявката ви!" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Получихме заявката ви" })).toBeVisible();
 
   const stored = await request.get(`/api/test/requests/${reference}`, {
     headers: { "x-test-access": "local-test-access" },
@@ -53,4 +52,42 @@ test("visitor calculates a price and stores a request", async ({ page, request }
   expect(body.status).toBe("NEW");
   expect(body.service).toBe("movers");
   expect(body.minEur).toBe(36);
+});
+
+test("keeps the entered request when sending fails, then retries", async ({ page }) => {
+  let attempts = 0;
+  await page.route("**/api/requests", async (route) => {
+    attempts += 1;
+    if (attempts === 1) {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: false, error: "server_error" }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.goto("/");
+  const calculator = page.getByRole("region", { name: "Калкулатор" });
+  await calculator.getByRole("radio", { name: "Хамали" }).check();
+  await calculator.getByRole("link", { name: "Изпрати заявка" }).click();
+
+  const form = page.locator("#request");
+  await form.getByLabel("Име", { exact: true }).fill("Мария Георгиева");
+  await form.getByLabel("Телефон", { exact: true }).fill("0888 123 456");
+  await form.getByLabel("Адрес или район", { exact: true }).fill("Младост 1");
+  await form.getByLabel("Желана дата", { exact: true }).fill(futureDate());
+  await expect(page.getByTestId("turnstile-status")).toHaveText("ready", { timeout: 20_000 });
+  await form.getByRole("button", { name: "Изпрати заявка" }).click();
+
+  await expect(page.getByRole("alert")).toHaveText("Не успяхме да изпратим заявката. Моля, опитайте отново.");
+  await expect(form.getByLabel("Име", { exact: true })).toHaveValue("Мария Георгиева");
+  await expect(form.getByLabel("Телефон", { exact: true })).toHaveValue("0888 123 456");
+  await expect(form.locator("select")).toHaveValue("movers");
+
+  await form.getByRole("button", { name: "Изпрати заявка" }).click();
+  await expect(page.getByRole("heading", { name: "Получихме заявката ви" })).toBeVisible();
+  await expect(page.getByTestId("reference-number")).toHaveText(/^PM-\d{6}-/);
 });

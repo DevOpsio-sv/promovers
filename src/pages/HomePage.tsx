@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BookingForm } from "../components/BookingForm.tsx";
-import { FAQ, HowItWorks, WhyChooseUs } from "../components/InfoSections.tsx";
+import { FAQ, WhyChooseUs } from "../components/InfoSections.tsx";
 import { Hero, ServiceCards } from "../components/ServicesAndHero.tsx";
 import { Footer, Header } from "../components/SiteChrome.tsx";
 import { StickyCta } from "../components/StickyCta.tsx";
@@ -18,12 +18,15 @@ export function HomePage() {
         <main>
           <Hero />
           <ServiceCards />
-          <HowItWorks />
-          <WhyChooseUs />
-          <BookingForm onComplete={setCompleted} />
-          <FAQ />
+          <div className="closing-viewport">
+            <div className="closing-layout">
+              <WhyChooseUs />
+              <BookingForm onComplete={setCompleted} />
+              <FAQ />
+            </div>
+            <Footer onHome />
+          </div>
         </main>
-        <Footer onHome />
         <StickyCta paused={completed} />
       </div>
     </BookingDraftProvider>

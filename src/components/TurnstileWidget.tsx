@@ -3,9 +3,11 @@ import { useEffect, useRef } from "react";
 interface TurnstileWidgetProps {
   siteKey: string;
   onToken: (token: string) => void;
+  size?: "normal" | "compact" | "flexible";
+  className?: string;
 }
 
-export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
+export function TurnstileWidget({ siteKey, onToken, size, className }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTokenRef = useRef(onToken);
 
@@ -24,6 +26,7 @@ export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,
         theme: "light",
+        ...(size ? { size } : {}),
         callback: (token) => onTokenRef.current(token),
         "error-callback": () => onTokenRef.current(""),
         "expired-callback": () => onTokenRef.current(""),
@@ -53,7 +56,7 @@ export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
       cancelled = true;
       if (widgetId) window.turnstile?.remove(widgetId);
     };
-  }, [siteKey]);
+  }, [siteKey, size]);
 
-  return <div ref={containerRef} className="min-h-16" />;
+  return <div ref={containerRef} className={className ?? "min-h-16"} />;
 }

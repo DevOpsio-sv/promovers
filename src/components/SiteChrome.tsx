@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
-import { ArrowRight, Menu, Phone, X } from "lucide-react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { ArrowRight, Mail, Menu, Phone, X } from "lucide-react";
 import { phoneHref, publicConfig, whatsappHref } from "../lib/config/public.ts";
 import { scrollToId } from "../lib/scroll.ts";
+
+const COPYRIGHT_YEAR = new Date().getFullYear();
 
 const NAV = [
   { hash: "#services", label: "Услуги" },
@@ -103,79 +105,57 @@ export function Footer({ onHome }: { onHome: boolean }) {
   const phone = phoneHref(publicConfig.phone);
   const whatsapp = whatsappHref(publicConfig.phone);
   const href = (hash: string) => (onHome ? hash : `/${hash}`);
+  const jump = (id: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!onHome) return;
+    scrollToId(event, id);
+  };
+  const hasContact = Boolean(phone || publicConfig.email || whatsapp);
+
   return (
-    <footer id="contact" className="border-t border-line bg-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.4fr_1fr]">
-        <div>
-          <p className="text-lg font-bold">ProMovers</p>
-          <p className="mt-2 max-w-md text-muted">
-            Хамалски услуги, транспорт с бус, преместване и извозване в {publicConfig.serviceArea}.
-          </p>
-          <p className="mt-4 text-sm text-muted">Район на работа: {publicConfig.serviceArea}.</p>
-        </div>
-        <div className="space-y-2 text-sm">
-          <p className="font-semibold">Връзка</p>
-          <p>
-            <a className="font-semibold text-accent-dark" href={href("#request")}>
-              Заявка през формата
-            </a>
-          </p>
-          {publicConfig.email ? (
-            <p>
-              <a className="font-semibold" href={`mailto:${publicConfig.email}`}>
-                {publicConfig.email}
-              </a>
-            </p>
-          ) : (
-            <p className="text-muted">Имейл за връзка се показва, след като бъде конфигуриран.</p>
-          )}
-          {phone ? (
-            <p>
-              <a className="font-semibold" href={phone}>
+    <footer id="contact" className="site-footer">
+      <div className="site-footer-bar">
+        <a href={onHome ? "#top" : "/"} className="brand site-footer-brand" onClick={onHome ? jump("top") : undefined}>
+          <img src="/favicon.svg" alt="" width="22" height="22" />
+          ProMovers
+        </a>
+        <nav className="site-footer-nav" aria-label="В края на страницата">
+          <a href={href("#services")} onClick={jump("services")}>
+            Услуги
+          </a>
+          <a href={href("#how")} onClick={jump("how")}>
+            Как работи
+          </a>
+          <a href={href("#faq")} onClick={jump("faq")}>
+            Въпроси
+          </a>
+        </nav>
+        {hasContact ? (
+          <div className="site-footer-contact">
+            {phone ? (
+              <a href={phone}>
+                <Phone aria-hidden="true" size={14} strokeWidth={1.75} />
                 {publicConfig.phone}
               </a>
-            </p>
-          ) : null}
-          {whatsapp ? (
-            <p>
-              <a className="font-semibold" href={whatsapp} rel="noreferrer">
+            ) : null}
+            {publicConfig.email ? (
+              <a href={`mailto:${publicConfig.email}`}>
+                <Mail aria-hidden="true" size={14} strokeWidth={1.75} />
+                {publicConfig.email}
+              </a>
+            ) : null}
+            {whatsapp ? (
+              <a href={whatsapp} rel="noreferrer">
                 WhatsApp
               </a>
-            </p>
-          ) : null}
-          <p>
-            <a href="/privacy">Политика за поверителност</a>
-          </p>
-          <p>
-            <a href="/cookies">Бисквитки</a>
-          </p>
+            ) : null}
+          </div>
+        ) : null}
+        <div className="site-footer-legal">
+          <p>© {COPYRIGHT_YEAR} ProMovers</p>
+          <a href="/privacy">Поверителност</a>
+          <a href="/cookies">Бисквитки</a>
         </div>
       </div>
-      <div className="border-t border-line px-4 py-4 text-center text-sm text-muted">
-        Ориентировъчните цени не са крайна оферта.
-      </div>
     </footer>
-  );
-}
-
-export function Section({
-  id,
-  title,
-  intro,
-  children,
-}: {
-  id: string;
-  title: string;
-  intro?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section id={id} className="scroll-mt-24 px-4 py-12 sm:py-16">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
-        {intro ? <p className="mt-3 max-w-2xl text-lg text-muted">{intro}</p> : null}
-        <div className="mt-8">{children}</div>
-      </div>
-    </section>
   );
 }

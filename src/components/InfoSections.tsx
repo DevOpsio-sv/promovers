@@ -1,125 +1,136 @@
-import { Clock3, MapPin, ShieldCheck } from "lucide-react";
-import { formatEur } from "../lib/formatting/currency.ts";
-import { pricingConfig } from "../lib/pricing/config.ts";
-import { Section } from "./SiteChrome.tsx";
-
-const minimumHours = pricingConfig.minimumHours.movers;
-const oneMoverFrom = pricingConfig.rates.oneMoverPerHour * minimumHours;
-const twoMoversFrom = pricingConfig.rates.twoMoversPerHour * minimumHours;
-
-const STEPS = [
-  {
-    title: "Избирате услуга",
-    text: "Калкулаторът показва ориентировъчна цена според услугата, часа, етажа и това дали има асансьор или допълнителен курс.",
-  },
-  {
-    title: "Изпращате заявка",
-    text: "Име, телефон, адрес и удобна дата. Без регистрация и без отделно плащане онлайн.",
-  },
-  {
-    title: "Потвърждаваме цената",
-    text: "Свързваме се, за да уточним детайлите. Крайната цена се казва преди работа.",
-  },
-] as const;
+import { useRef, useState, type KeyboardEvent } from "react";
+import { Check, Minus, Plus, Shield, Users, Zap } from "lucide-react";
 
 const REASONS = [
   {
-    icon: ShieldCheck,
-    title: "Ясна сметка преди обаждане",
-    text: "Виждате от какво се състои ориентировъчната цена и кои суми са допускане.",
+    icon: Users,
+    title: "Професионално отношение",
+    text: "Внимание към вещите и дома ви.",
   },
   {
-    icon: Clock3,
-    title: "Заявка за по-малко от минута",
-    text: "Попълвате формата от телефона. Заявката не е потвърден час.",
+    icon: Zap,
+    title: "Бърза реакция",
+    text: "Лесна заявка и навременна обратна връзка.",
   },
   {
-    icon: MapPin,
-    title: "София и близките райони",
-    text: "Хамали, бус и извозване на едно място. Адрес извън града се потвърждава отделно.",
+    icon: Shield,
+    title: "Опитен екип",
+    text: "Практичен подход към всяко преместване.",
+  },
+  {
+    icon: Check,
+    title: "Гъвкави решения",
+    text: "Услуга според вашите нужди.",
   },
 ] as const;
 
 const QUESTIONS = [
   {
-    q: "Колко струват хамалските услуги в София?",
-    a: `Ориентировъчно калкулаторът започва от ${formatEur(oneMoverFrom)} за един хамалин и ${formatEur(twoMoversFrom)} за двама, при минимум ${minimumHours} часа. Етажът, асансьорът и достъпът променят сумата. Това не е крайна оферта.`,
+    q: "Окончателна ли е изчислената цена?",
+    a: "Калкулаторът показва ориентировъчна цена според избраните услуги и въведените данни. Крайната оферта се уточнява след преглед на заявката.",
   },
   {
-    q: "Как се изчислява цената?",
-    a: "Сметката се обновява веднага според избраната услуга. При изпращане сървърът я пресмята отново и не приема цена, подадена от браузъра. Ако данните не стигат, показваме начална цена, диапазон или „Цена след уточнение“.",
-  },
-  {
-    q: "Има ли доплащане за етаж без асансьор?",
-    a: `Ако няма асансьор, калкулаторът добавя ${formatEur(pricingConfig.assumptions.floorWithoutElevatorEur)} за всеки етаж над партера. Това е работно допускане, не фиксирана тарифа, и се потвърждава преди работа. При асансьор тази добавка не се смята.`,
-  },
-  {
-    q: "Може ли да заявя само транспорт?",
-    a: "Да. Услугата „Транспорт с бус“ може да бъде само с шофьор или с хамали. Не е нужно да заявявате цяло преместване.",
-  },
-  {
-    q: "Как се извозват старите мебели?",
-    a: `Посочвате количеството и достъпа в калкулатора. Ориентировъчно едно обемно мебел започва от ${formatEur(pricingConfig.startingPrices.singleBulkyFurniture)}, а няколко предмета в един курс — от ${formatEur(pricingConfig.startingPrices.multipleFurniture)}. Не приемаме опасни, забранени или специално регулирани отпадъци.`,
-  },
-  {
-    q: "Кога се потвърждава крайната цена?",
-    a: "След като прегледаме заявката. Ориентировъчната сума на сайта не е резервация и не запазва час.",
+    q: "Извършвате ли спешни премествания?",
+    a: "Можете да изпратите заявка с желаната дата. Възможността за изпълнение зависи от наличните свободни часове и организацията на екипа.",
   },
   {
     q: "В кои райони работите?",
-    a: "В София и близките населени места. Ако адресът е извън града, калкулаторът показва, че транспортът се потвърждава отделно. Няма обявен адрес на офис.",
+    a: "Предлагаме услуги в София и района според конкретния адрес и вида на услугата. За други дестинации можете да отправите запитване.",
   },
   {
     q: "Трябва ли да се регистрирам?",
-    a: "Не. Изпращате заявка и получавате номер. По него потвърждаваме детайлите. Телефонът се използва само за връзка по тази заявка.",
+    a: "Не. Можете да изчислите ориентировъчна цена и да изпратите заявка без регистрация.",
   },
 ] as const;
 
-export function HowItWorks() {
-  return (
-    <Section id="how" title="Как се заявява" intro="Три кратки стъпки, без регистрация.">
-      <ol className="grid gap-4 md:grid-cols-3">
-        {STEPS.map((step, index) => (
-          <li key={step.title} className="rounded-2xl border border-line bg-card p-5">
-            <p className="text-sm font-bold text-accent-dark">Стъпка {index + 1}</p>
-            <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
-            <p className="mt-2 text-muted">{step.text}</p>
-          </li>
-        ))}
-      </ol>
-    </Section>
-  );
-}
-
 export function WhyChooseUs() {
   return (
-    <Section id="why" title="Защо да заявите оттук" intro="Кратка заявка, ясна цена и потвърждение преди работа.">
-      <div className="grid gap-4 md:grid-cols-3">
+    <section id="why" className="closing-trust" aria-labelledby="why-title">
+      <h2 id="why-title" className="closing-title">
+        Защо ProMovers
+      </h2>
+      <p className="closing-lead">Преместването може да бъде лесно, когато разчитате на правилния екип.</p>
+      <ul className="trust-grid">
         {REASONS.map((reason) => (
-          <article key={reason.title} className="rounded-2xl border border-line bg-white p-5">
-            <reason.icon aria-hidden="true" className="text-accent" />
-            <h3 className="mt-3 text-xl font-bold">{reason.title}</h3>
-            <p className="mt-2 text-muted">{reason.text}</p>
-          </article>
+          <li key={reason.title}>
+            <span className="trust-icon" aria-hidden="true">
+              <reason.icon size={18} strokeWidth={1.75} />
+            </span>
+            <span className="trust-copy">
+              <h3>{reason.title}</h3>
+              <p>{reason.text}</p>
+            </span>
+          </li>
         ))}
-      </div>
-    </Section>
+      </ul>
+    </section>
   );
 }
 
 export function FAQ() {
+  const [open, setOpen] = useState<number | null>(null);
+  const buttons = useRef<Array<HTMLButtonElement | null>>([]);
+
+  function onKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    const last = QUESTIONS.length - 1;
+    let next: number | null = null;
+    if (event.key === "ArrowDown") next = index === last ? 0 : index + 1;
+    else if (event.key === "ArrowUp") next = index === 0 ? last : index - 1;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = last;
+    if (next === null) return;
+    event.preventDefault();
+    buttons.current[next]?.focus();
+  }
+
   return (
-    <Section id="faq" title="Въпроси преди заявка" intro="Цена, етаж без асансьор, транспорт и извозване в София.">
-      <div className="max-w-3xl divide-y divide-line rounded-2xl border border-line bg-white">
-        {QUESTIONS.map((item) => (
-          <details key={item.q} className="group px-4 py-3">
-            <summary className="cursor-pointer list-none py-2 font-semibold [&::-webkit-details-marker]:hidden">
-              {item.q}
-            </summary>
-            <p className="pb-3 text-muted">{item.a}</p>
-          </details>
-        ))}
+    <section id="faq" className="closing-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title" className="closing-title">
+        Често задавани въпроси
+      </h2>
+      <p className="closing-lead">Отговори на най-важните въпроси преди заявка.</p>
+      <div className="faq-grid">
+        {QUESTIONS.map((item, index) => {
+          const expanded = open === index;
+          const buttonId = `faq-button-${index}`;
+          const panelId = `faq-panel-${index}`;
+          return (
+            <article key={item.q} className="faq-item">
+              <h3 className="faq-question">
+                <button
+                  id={buttonId}
+                  type="button"
+                  aria-expanded={expanded}
+                  aria-controls={panelId}
+                  ref={(node) => {
+                    buttons.current[index] = node;
+                  }}
+                  onClick={() => setOpen((current) => (current === index ? null : index))}
+                  onKeyDown={(event) => onKeyDown(event, index)}
+                >
+                  <span>{item.q}</span>
+                  <span className="faq-mark" aria-hidden="true">
+                    {expanded ? <Minus size={16} strokeWidth={1.75} /> : <Plus size={16} strokeWidth={1.75} />}
+                  </span>
+                </button>
+              </h3>
+              <div
+                id={panelId}
+                className="faq-panel"
+                role="region"
+                aria-labelledby={buttonId}
+                data-open={expanded ? "true" : "false"}
+                aria-hidden={expanded ? undefined : true}
+              >
+                <div className="faq-panel-inner">
+                  <p>{item.a}</p>
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </div>
-    </Section>
+    </section>
   );
 }

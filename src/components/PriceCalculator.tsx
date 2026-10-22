@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
-import { HardHat, House, Sofa, Truck, Users, Warehouse } from "lucide-react";
 import { scrollToId } from "../lib/scroll.ts";
 import { useBookingDraft } from "../context/BookingDraft.tsx";
 import { calculateEstimate } from "../lib/pricing/calculate.ts";
@@ -16,17 +14,9 @@ import {
   VAN_CREW_LABELS,
   WASTE_LABELS,
 } from "../lib/pricing/labels.ts";
-import type { CalculatorInput, ServiceType } from "../lib/pricing/types.ts";
+import type { CalculatorInput } from "../lib/pricing/types.ts";
 import { PriceBreakdown } from "./PriceBreakdown.tsx";
-
-const ICONS: Record<ServiceType, LucideIcon> = {
-  movers: Users,
-  van: Truck,
-  moving: House,
-  furniture_removal: Sofa,
-  construction_waste: HardHat,
-  clearance: Warehouse,
-};
+import { SERVICE_ICONS } from "./service-icons.ts";
 
 const FLOORS = [
   { value: 0, label: "Партер" },
@@ -54,7 +44,7 @@ export function PriceCalculator() {
         <legend className="calc-legend">Услуга</legend>
         <div className="calc-grid">
           {SERVICES.map((service) => {
-            const Icon = ICONS[service.id];
+            const Icon = SERVICE_ICONS[service.id];
             return (
               <label key={service.id} className="calc-option">
                 <input

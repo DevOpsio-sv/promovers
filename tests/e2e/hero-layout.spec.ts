@@ -192,8 +192,8 @@ test.describe("first screen", () => {
     await page.getByRole("link", { name: "Заяви услуга" }).click();
     await expect(page.locator("#request")).toBeInViewport();
     await expect(page.getByRole("heading", { name: "Услуги в София", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Как се заявява" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Въпроси преди заявка" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Бързо, лесно и без излишни формалности." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Често задавани въпроси" })).toBeVisible();
   });
 
   test("mobile menu opens and closes from the keyboard", async ({ page }) => {

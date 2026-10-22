@@ -1,20 +1,31 @@
-import type { LucideIcon } from "lucide-react";
-import { ArrowRight, HardHat, House, ShieldCheck, Sofa, Truck, Users, Warehouse } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { ArrowRight, Calculator, CalendarDays, ChevronRight, CircleCheck, ShieldCheck } from "lucide-react";
 import { useBookingDraft } from "../context/BookingDraft.tsx";
-import { scrollToId } from "../lib/scroll.ts";
+import { scrollElementIntoView, scrollToId } from "../lib/scroll.ts";
 import { SERVICES } from "../lib/pricing/labels.ts";
 import type { ServiceType } from "../lib/pricing/types.ts";
 import { PriceCalculator } from "./PriceCalculator.tsx";
-import { Section } from "./SiteChrome.tsx";
+import { ServiceDialog, type ServiceDialogReason } from "./ServiceDialog.tsx";
+import { SERVICE_ICONS } from "./service-icons.ts";
 
-const ICONS: Record<ServiceType, LucideIcon> = {
-  movers: Users,
-  van: Truck,
-  moving: House,
-  furniture_removal: Sofa,
-  construction_waste: HardHat,
-  clearance: Warehouse,
-};
+const STEPS = [
+  {
+    title: "Изчислете цена",
+    text: "Изберете услуга и въведете основните детайли.",
+    icon: Calculator,
+  },
+  {
+    title: "Заявете услуга",
+    text: "Попълнете кратка форма с дата, адрес и телефон.",
+    icon: CalendarDays,
+  },
+  {
+    title: "Потвърждение",
+    text: "Ще се свържем с вас за потвърждение и детайли.",
+    icon: CircleCheck,
+  },
+] as const;
 
 export function Hero() {
   return (
@@ -77,50 +88,99 @@ export function Hero() {
 
 export function ServiceCards() {
   const { setService } = useBookingDraft();
+  const [activeId, setActiveId] = useState<ServiceType | null>(null);
+  const triggers = useRef(new Map<ServiceType, HTMLButtonElement>());
+  const active = SERVICES.find((item) => item.id === activeId) ?? null;
+
+  const onDialogClose = useCallback(
+    (reason: ServiceDialogReason, id: ServiceType) => {
+      const trigger = triggers.current.get(id) ?? null;
+      if (reason === "calculate") {
+        flushSync(() => {
+          setActiveId(null);
+          setService(id);
+        });
+        const moved = scrollElementIntoView("calculator");
+        if (!moved) trigger?.focus({ preventScroll: true });
+        return;
+      }
+      setActiveId(null);
+      requestAnimationFrame(() => trigger?.focus({ preventScroll: true }));
+    },
+    [setService],
+  );
+
   return (
-    <Section
-      id="services"
-      title="Услуги в София"
-      intro="Хамалски услуги, транспорт с бус, преместване на жилища и офиси, извозване на мебели и разчистване. Цената се смята веднага в калкулатора."
-    >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map((service) => {
-          const Icon = ICONS[service.id];
-          return (
-            <article key={service.id} className="flex flex-col rounded-2xl border border-line bg-card p-5">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent-dark">
-                  <Icon aria-hidden="true" size={22} />
+    <section id="services" className="services-screen" aria-labelledby="services-title">
+      <div className="services-layout">
+        <header className="services-intro">
+          <p className="services-kicker">Нашите услуги</p>
+          <h2 id="services-title" className="services-title">
+            Услуги в София
+          </h2>
+          <p className="services-lead">Изберете какво ви трябва. Цената се изчислява веднага в калкулатора.</p>
+        </header>
+
+        <ul className="service-grid">
+          {SERVICES.map((service) => {
+            const Icon = SERVICE_ICONS[service.id];
+            const titleId = `service-title-${service.id}`;
+            const summaryId = `service-summary-${service.id}`;
+            return (
+              <li key={service.id} className="service-card">
+                <span className="service-card-icon" aria-hidden="true">
+                  <Icon size={20} strokeWidth={1.75} />
                 </span>
-                <h3 className="text-lg font-bold leading-snug">{service.title}</h3>
-              </div>
-              <p className="mt-3 text-muted">{service.summary}</p>
-              <ul className="mt-3 space-y-1 text-sm">
-                {service.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                className="btn btn-secondary mt-5"
-                onClick={() => {
-                  setService(service.id);
-                  const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                    ? "auto"
-                    : "smooth";
-                  document.getElementById("calculator")?.scrollIntoView({ behavior, block: "start" });
-                }}
-              >
-                Изчисли за тази услуга
-              </button>
-            </article>
-          );
-        })}
+                <div className="service-card-copy">
+                  <h3 id={titleId} className="service-card-title">
+                    <button
+                      type="button"
+                      className="service-card-open"
+                      aria-haspopup="dialog"
+                      aria-describedby={summaryId}
+                      ref={(node) => {
+                        if (node) triggers.current.set(service.id, node);
+                        else triggers.current.delete(service.id);
+                      }}
+                      onClick={() => setActiveId(service.id)}
+                    >
+                      {service.title}
+                      <ChevronRight className="service-card-chevron" aria-hidden="true" size={18} strokeWidth={1.75} />
+                    </button>
+                  </h3>
+                  <p id={summaryId} className="service-card-summary">
+                    {service.summary}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        <section id="how" className="services-process" aria-labelledby="how-title">
+          <p className="services-kicker">Как работи</p>
+          <h2 id="how-title" className="services-process-title">
+            Бързо, лесно и без излишни формалности.
+          </h2>
+          <ol className="process-steps">
+            {STEPS.map((step, index) => (
+              <li key={step.title}>
+                <span className="process-index" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <span className="process-icon" aria-hidden="true">
+                  <step.icon size={16} strokeWidth={1.75} />
+                </span>
+                <span className="process-copy">
+                  <span className="process-title">{step.title}</span>
+                  <span className="process-text">{step.text}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
       </div>
-      <p className="mt-4 max-w-3xl text-sm text-muted">
-        Не приемаме опасни, забранени или специално регулирани отпадъци. Строителните отпадъци се
-        извозват само когато могат да се предадат на разрешено място.
-      </p>
-    </Section>
+      <ServiceDialog service={active} onClose={onDialogClose} />
+    </section>
   );
 }
