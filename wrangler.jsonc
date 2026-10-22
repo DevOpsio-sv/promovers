@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "promovers",
+  // 2026-10-19 is the newest date the installed workerd binary accepts.
+  "compatibility_date": "2026-10-19",
+  "main": "./worker/index.ts",
+  "upload_source_maps": true,
+  "workers_dev": true,
+  "assets": {
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "SITE_URL": "https://promovers.vasileva-silvena.workers.dev",
+    "INDEXING_ENABLED": "false",
+    "REDIRECT_TO_PRIMARY": "false",
+    "PRIMARY_ORIGIN": "https://promovers.bg",
+    "RATE_LIMIT_PER_HOUR": "8",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFgaLJsTTRh9x0B2"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "promovers",
+      "database_id": "362cda41-a57f-4f78-be3a-16b69f9408bf",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

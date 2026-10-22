@@ -1,0 +1,24 @@
+# Local Worker overrides. Copy to .dev.vars. This file is not deployed.
+ENVIRONMENT=development
+SITE_URL=http://127.0.0.1:5173
+INDEXING_ENABLED=false
+REDIRECT_TO_PRIMARY=false
+PRIMARY_ORIGIN=https://promovers.bg
+
+# Cloudflare's public dummy secret. It passes every token outside production.
+# Production rejects this value. Replace it with: npx wrangler secret put TURNSTILE_SECRET_KEY
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+
+# Used only to hash IP addresses. Use a long random string in every real environment.
+IP_HASH_SALT=replace-with-a-long-random-string
+
+RATE_LIMIT_PER_HOUR=30
+
+# Enables GET /api/test/requests/:reference outside production. Never set this in production.
+TEST_ACCESS_KEY=local-test-access
+
+# Optional email notification. Leave blank until a provider is ready.
+# EMAIL_API_URL=https://api.resend.com/emails
+# EMAIL_API_KEY=
+# EMAIL_FROM="ProMovers <requests@example.com>"
+# EMAIL_TO=dispatcher@example.com
