@@ -100,9 +100,8 @@ export function BookingForm({ onComplete }: { onComplete: (done: boolean) => voi
 
   useEffect(() => {
     if (!isServiceType(service)) return;
-    if (input?.service === service) return;
     setService(service);
-  }, [input?.service, service, setService]);
+  }, [service, setService]);
 
   const estimate = input ? calculateEstimate(input) : null;
   const needsSecondAddress = input?.service === "van" || input?.service === "moving";

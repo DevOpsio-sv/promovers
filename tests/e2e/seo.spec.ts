@@ -43,8 +43,8 @@ test("search metadata, storage and unknown URLs stay within the public page", as
   expect(errors.filter((error) => /hydrat/i.test(error))).toEqual([]);
 
   await page.goto("/cookies");
-  await expect(page.getByRole("heading", { level: 1, name: "Бисквитки и локално съхранение" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Защо няма банер" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Политика за бисквитките" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Какво представляват бисквитките?" })).toBeVisible();
 
   const missing = await request.get("/this-page-is-not-a-service");
   expect(missing.status()).toBe(404);

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { defaultCalculatorInput } from "../lib/pricing/defaults.ts";
 import type { CalculatorInput, ServiceType } from "../lib/pricing/types.ts";
 
@@ -14,16 +14,22 @@ const BookingDraftContext = createContext<BookingDraft | null>(null);
 
 export function BookingDraftProvider({ children }: { children: ReactNode }) {
   const [input, setInput] = useState<CalculatorInput | null>(null);
+  const setService = useCallback((service: ServiceType) => {
+    setInput((current) => (current?.service === service ? current : defaultCalculatorInput(service)));
+  }, []);
+  const update = useCallback((patch: Partial<CalculatorInput>) => {
+    setInput((current) => (current ? { ...current, ...patch, service: current.service } : current));
+  }, []);
+  const reset = useCallback(() => setInput(null), []);
 
   const value = useMemo<BookingDraft>(
     () => ({
       input,
-      setService: (service) => setInput(defaultCalculatorInput(service)),
-      update: (patch) =>
-        setInput((current) => (current ? { ...current, ...patch, service: current.service } : current)),
-      reset: () => setInput(null),
+      setService,
+      update,
+      reset,
     }),
-    [input],
+    [input, reset, setService, update],
   );
 
   return <BookingDraftContext.Provider value={value}>{children}</BookingDraftContext.Provider>;

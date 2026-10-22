@@ -10,7 +10,7 @@ export function HomePage() {
   const [completed, setCompleted] = useState(false);
   return (
     <BookingDraftProvider>
-      <div id="top" className="pb-24 lg:pb-0">
+      <div id="top" className="home-shell pb-24 lg:pb-0">
         <a className="skip-link" href="#calculator">
           Към калкулатора
         </a>

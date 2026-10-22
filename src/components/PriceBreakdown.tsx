@@ -1,41 +1,47 @@
+import { Calculator } from "lucide-react";
 import type { Estimate } from "../lib/pricing/types.ts";
-import { estimatePrimaryText, estimateSecondaryText } from "../lib/formatting/currency.ts";
-import { formatEur } from "../lib/formatting/currency.ts";
+import { estimatePrimaryText, estimateSecondaryText, formatEur } from "../lib/formatting/currency.ts";
 
 export function PriceBreakdown({ estimate }: { estimate: Estimate | null }) {
   const primary = estimate ? estimatePrimaryText(estimate) : "Изберете услуга";
   const secondary = estimate ? estimateSecondaryText(estimate) : null;
+  const showMark = !estimate || estimate.lines.length === 0;
   return (
-    <div className="min-h-40 rounded-2xl bg-ink px-4 py-4 text-white" aria-live="polite">
-      <p className="text-sm font-semibold text-white/80">Ориентировъчна цена</p>
-      <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums" data-testid="estimate-amount">
-        {primary}
-      </p>
-      {secondary ? <p className="mt-1 text-lg font-semibold tabular-nums">{secondary}</p> : null}
-      {estimate && estimate.lines.length > 0 ? (
-        <ul className="mt-3 space-y-1 text-sm text-white/90">
-          {estimate.lines.map((item) => (
-            <li key={item.id} className="flex items-baseline justify-between gap-3">
-              <span>{item.label}</span>
-              <span className="tabular-nums">{formatEur(item.amountEur)}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-3 text-sm text-white/80">
-          Изберете услуга и условията, които виждате. Сумата се обновява веднага.
+    <div className={showMark ? "price-panel price-panel-compact" : "price-panel"} aria-live="polite">
+      <div className="price-panel-copy">
+        <p className="price-panel-kicker">Ориентировъчна цена</p>
+        <p className="price-panel-value" data-testid="estimate-amount">
+          {primary}
         </p>
-      )}
-      {estimate && estimate.assumptions.length > 0 ? (
-        <ul className="mt-3 list-disc space-y-1 pl-4 text-sm text-white/75">
-          {estimate.assumptions.slice(0, 4).map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        {secondary ? <p className="price-panel-secondary">{secondary}</p> : null}
+        {estimate && estimate.lines.length > 0 ? (
+          <ul className="price-panel-lines">
+            {estimate.lines.map((item) => (
+              <li key={item.id}>
+                <span>{item.label}</span>
+                <span>{formatEur(item.amountEur)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="price-panel-note">Изберете услуга и необходимите условия. Сумата се обновява веднага.</p>
+        )}
+        {estimate && estimate.assumptions.length > 0 ? (
+          <ul className="price-panel-assumptions">
+            {estimate.assumptions.slice(0, 4).map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : null}
+        <p className="price-panel-disclaimer">
+          {estimate?.disclaimer ?? "Крайната цена се потвърждава след преглед на заявката."}
+        </p>
+      </div>
+      {showMark ? (
+        <span className="price-panel-mark" aria-hidden="true">
+          <Calculator size={26} strokeWidth={1.75} />
+        </span>
       ) : null}
-      <p className="mt-3 text-sm text-white/80">
-        {estimate?.disclaimer ?? "Крайната цена се потвърждава след преглед на заявката."}
-      </p>
     </div>
   );
 }

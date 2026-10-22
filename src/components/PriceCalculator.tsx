@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { HardHat, House, Sofa, Truck, Users, Warehouse } from "lucide-react";
+import { scrollToId } from "../lib/scroll.ts";
 import { useBookingDraft } from "../context/BookingDraft.tsx";
 import { calculateEstimate } from "../lib/pricing/calculate.ts";
 import {
@@ -43,31 +44,31 @@ export function PriceCalculator() {
   const estimate = input ? calculateEstimate(input) : null;
 
   return (
-    <section
-      id="calculator"
-      aria-label="Калкулатор"
-      className="scroll-mt-24 rounded-3xl border border-line bg-card p-4 shadow-[0_24px_50px_-32px_rgba(28,25,23,0.45)] sm:p-5"
-    >
-      <h2 className="text-xl font-bold">Изчислете ориентировъчна цена</h2>
-      <p className="mt-1 text-sm text-muted">Сметката е в евро и се обновява веднага.</p>
+    <section id="calculator" tabIndex={-1} aria-label="Калкулатор" className="calc">
+      <div className="calc-intro">
+        <h2>Изчислете ориентировъчна цена</h2>
+        <p>Сметката е в евро и се обновява веднага.</p>
+      </div>
 
-      <fieldset className="mt-4">
-        <legend className="text-sm font-semibold">Услуга</legend>
-        <div className="mt-2 grid grid-cols-2 gap-2">
+      <fieldset className="calc-services">
+        <legend className="calc-legend">Услуга</legend>
+        <div className="calc-grid">
           {SERVICES.map((service) => {
             const Icon = ICONS[service.id];
             return (
-              <label key={service.id} className="choice relative">
+              <label key={service.id} className="calc-option">
                 <input
-                  className="absolute inset-0 z-10 cursor-pointer opacity-0"
                   type="radio"
                   name="calculator-service"
                   value={service.id}
                   checked={input?.service === service.id}
+                  onClick={() => {
+                    if (input?.service !== service.id) setService(service.id);
+                  }}
                   onChange={() => setService(service.id)}
                 />
-                <Icon aria-hidden="true" size={18} />
-                <span className="text-sm leading-tight">{service.menu}</span>
+                <Icon aria-hidden="true" size={18} strokeWidth={1.75} />
+                <span>{service.menu}</span>
               </label>
             );
           })}
@@ -75,21 +76,17 @@ export function PriceCalculator() {
       </fieldset>
 
       {input ? <ServiceFields input={input} update={update} /> : null}
-      <div className="mt-4">
-        <PriceBreakdown estimate={estimate} />
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {input ? (
-          <a href="#request" className="btn btn-primary">
+      <PriceBreakdown estimate={estimate} />
+      {input ? (
+        <div className="calc-actions">
+          <a href="#request" className="btn btn-primary" onClick={(event) => scrollToId(event, "request")}>
             Изпрати заявка
           </a>
-        ) : null}
-        {input ? (
           <button type="button" className="btn btn-secondary" onClick={reset}>
             Изчисти
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -102,7 +99,7 @@ function ServiceFields({
   update: (patch: Partial<CalculatorInput>) => void;
 }) {
   return (
-    <div className="mt-4 space-y-4">
+    <div className="calc-fields">
       {input.service === "movers" ? (
         <>
           <ChoiceRow label="Хамали">
@@ -379,7 +376,7 @@ function ChoiceRow({ label, children }: { label: string; children: ReactNode }) 
   return (
     <fieldset>
       <legend className="text-sm font-semibold">{label}</legend>
-      <div className="mt-2 flex flex-wrap gap-2">{children}</div>
+      <div className="choice-row">{children}</div>
     </fieldset>
   );
 }
