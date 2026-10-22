@@ -82,8 +82,13 @@ export function PrivacyPage() {
 
         <h2 className="mt-8 text-2xl font-bold">Бисквитки</h2>
         <p className="mt-3">
-          Сайтът не поставя рекламни или аналитични бисквитки. Техническата проверка на формата може да използва
-          бисквитка на Cloudflare само за тази проверка.
+          Сайтът не поставя рекламни или аналитични бисквитки и не пази заявката в браузъра. Формата зарежда
+          Cloudflare Turnstile само за защита от автоматични заявки. Подробностите, включително кои бисквитки зависят
+          от таблото на Cloudflare, са на страницата{" "}
+          <a className="font-semibold text-accent-dark" href="/cookies">
+            Бисквитки и локално съхранение
+          </a>
+          .
         </p>
         <p className="mt-6">
           <a className="font-semibold text-accent-dark" href="/">

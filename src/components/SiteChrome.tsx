@@ -72,6 +72,9 @@ export function Footer({ onHome }: { onHome: boolean }) {
           <p>
             <a href="/privacy">Политика за поверителност</a>
           </p>
+          <p>
+            <a href="/cookies">Бисквитки</a>
+          </p>
         </div>
       </div>
       <div className="border-t border-line px-4 py-4 text-center text-sm text-muted">

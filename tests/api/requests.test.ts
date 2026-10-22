@@ -154,6 +154,9 @@ describe("service requests API", () => {
     const health = await call("/api/health");
     expect(health.status).toBe(200);
     const robots = await call("/robots.txt");
-    expect(await robots.text()).toContain("Disallow: /");
+    expect(robots.headers.get("content-type")).toContain("text/plain");
+    const robotsBody = await robots.text();
+    expect(robotsBody).toContain("Allow: /");
+    expect(robotsBody).not.toContain("Disallow: /");
   });
 });

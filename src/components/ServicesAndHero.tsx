@@ -41,10 +41,16 @@ export function Hero() {
             <li className="chip">Без регистрация</li>
             <li className="chip">Потвърждение преди работа</li>
           </ul>
-          <div
-            className="hero-photo mt-8 hidden rounded-2xl lg:block"
-            role="img"
-            aria-label="Кашони и покрит фотьойл, подготвени за преместване"
+          <img
+            className="hero-photo mt-8 hidden w-full rounded-2xl lg:block"
+            src="/images/sofia-moving-boxes-960.webp"
+            srcSet="/images/sofia-moving-boxes-640.webp 640w, /images/sofia-moving-boxes-960.webp 960w, /images/sofia-moving-boxes-1280.webp 1280w"
+            sizes="(min-width: 1024px) 560px, 1px"
+            width={1280}
+            height={800}
+            alt="Кашони с надпис kitchen и покрит фотьойл в светла стая, подготвени за преместване. На снимката няма хора."
+            decoding="async"
+            fetchPriority="high"
           />
         </div>
         <PriceCalculator />
@@ -59,7 +65,7 @@ export function ServiceCards() {
     <Section
       id="services"
       title="Услуги в София"
-      intro="Изберете какво ви трябва. Цената се смята веднага в калкулатора."
+      intro="Хамалски услуги, транспорт с бус, преместване на жилища и офиси, извозване на мебели и разчистване. Цената се смята веднага в калкулатора."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((service) => {

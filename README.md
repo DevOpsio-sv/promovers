@@ -95,7 +95,7 @@ npm run deploy
 npx wrangler d1 execute promovers --remote --command "SELECT reference_number, status, pricing_version FROM service_requests ORDER BY created_at DESC LIMIT 5"
 ```
 
-`INDEXING_ENABLED` stays `false` on the temporary host, so `robots.txt` disallows crawling. `REDIRECT_TO_PRIMARY` stays `false` until the custom domain answers correctly.
+`INDEXING_ENABLED` stays `false` on the temporary host. HTML responses send `X-Robots-Tag: noindex, follow`, and `robots.txt` still allows crawling so a crawler can see that tag. `sitemap.xml` returns 404 until indexing is enabled on the configured host. `REDIRECT_TO_PRIMARY` stays `false` until the custom domain answers correctly.
 
 After the first deploy, set `SITE_URL` in `wrangler.jsonc` `vars` to the exact workers.dev origin Cloudflare shows. Rebuild so the canonical tag matches. Do not leave `https://example.workers.dev` in a public build.
 
@@ -118,7 +118,7 @@ Do not turn the redirect on before the custom domain responds. A redirect to a d
 
 ## Photography
 
-The hero photograph is Pexels photo 4246119 (packed boxes and a covered chair, no people). It is stored locally as WebP in `public/images/`. The Open Graph image is a text card, not a picture of staff.
+The hero photograph is Pexels photo 4246119 (packed boxes and a covered chair, no people). It is stored locally as WebP in `public/images/sofia-moving-boxes-*.webp`. The Open Graph image is `public/og.png`, a text card, not a picture of staff.
 
 ## Privacy
 

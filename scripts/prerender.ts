@@ -6,7 +6,11 @@ import { build, loadEnv } from "vite";
 import { applyTemplate, pageHead } from "./html-template.ts";
 
 const env = loadEnv("production", process.cwd(), "VITE_");
-const siteUrl = (env.VITE_SITE_URL || "https://example.workers.dev").replace(/\/$/, "");
+const configuredSite = fs.readFileSync("wrangler.jsonc", "utf8").match(/"SITE_URL"\s*:\s*"([^"]+)"/)?.[1];
+const siteUrl = (env.VITE_SITE_URL || configuredSite || "https://promovers.vasileva-silvena.workers.dev").replace(
+  /\/$/,
+  "",
+);
 const indexing = env.VITE_INDEXING_ENABLED === "true";
 
 await build({
@@ -27,7 +31,7 @@ const templatePath = fs.existsSync("dist/client/index.html")
 const template = fs.readFileSync(templatePath, "utf8");
 const clientDir = path.dirname(templatePath);
 
-function write(pagePath: "/" | "/privacy", filePath: string) {
+function write(pagePath: "/" | "/privacy" | "/cookies" | "/404", filePath: string) {
   const html = applyTemplate(template, siteUrl, pageHead(siteUrl, pagePath, indexing)).replace(
     "<!--app-html-->",
     render(pagePath),
@@ -38,4 +42,6 @@ function write(pagePath: "/" | "/privacy", filePath: string) {
 
 write("/", templatePath);
 write("/privacy", path.join(clientDir, "privacy", "index.html"));
+write("/cookies", path.join(clientDir, "cookies", "index.html"));
+write("/404", path.join(clientDir, "404.html"));
 console.log(`Prerendered ${siteUrl} (indexing: ${indexing ? "on" : "off"})`);

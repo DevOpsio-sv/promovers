@@ -1,5 +1,16 @@
-import { HOME_DESCRIPTION, HOME_TITLE, PRIVACY_DESCRIPTION, PRIVACY_TITLE, SITE_NAME } from "../src/lib/config/site.ts";
+import {
+  COOKIES_DESCRIPTION,
+  COOKIES_TITLE,
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  NOT_FOUND_DESCRIPTION,
+  NOT_FOUND_TITLE,
+  PRIVACY_DESCRIPTION,
+  PRIVACY_TITLE,
+  SITE_NAME,
+} from "../src/lib/config/site.ts";
 import { buildJsonLd, canonicalUrl } from "../src/lib/seo/metadata.ts";
+import type { PublicPage } from "../src/lib/seo/routing.ts";
 
 export interface PageHead {
   title: string;
@@ -9,19 +20,23 @@ export interface PageHead {
   jsonLd: unknown;
 }
 
-export function pageHead(siteUrl: string, path: "/" | "/privacy", indexing: boolean): PageHead {
-  if (path === "/privacy") {
+export function pageHead(siteUrl: string, path: PublicPage | "/404", indexing: boolean): PageHead {
+  if (path === "/privacy" || path === "/cookies" || path === "/404") {
+    const title = path === "/privacy" ? PRIVACY_TITLE : path === "/cookies" ? COOKIES_TITLE : NOT_FOUND_TITLE;
+    const description =
+      path === "/privacy" ? PRIVACY_DESCRIPTION : path === "/cookies" ? COOKIES_DESCRIPTION : NOT_FOUND_DESCRIPTION;
     return {
-      title: PRIVACY_TITLE,
-      description: PRIVACY_DESCRIPTION,
+      title,
+      description,
       path,
-      indexing,
+      indexing: path === "/404" ? false : indexing,
       jsonLd: {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        name: PRIVACY_TITLE,
-        description: PRIVACY_DESCRIPTION,
-        url: canonicalUrl(siteUrl, "/privacy"),
+        name: title,
+        description,
+        inLanguage: "bg",
+        url: canonicalUrl(siteUrl, path),
         isPartOf: { "@type": "WebSite", name: SITE_NAME, url: canonicalUrl(siteUrl, "/") },
       },
     };
@@ -31,7 +46,7 @@ export function pageHead(siteUrl: string, path: "/" | "/privacy", indexing: bool
     description: HOME_DESCRIPTION,
     path: "/",
     indexing,
-    jsonLd: buildJsonLd(siteUrl),
+    jsonLd: buildJsonLd(siteUrl, { telephone: process.env.VITE_PUBLIC_PHONE }),
   };
 }
 

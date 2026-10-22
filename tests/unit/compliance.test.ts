@@ -87,8 +87,14 @@ describe("Turnstile", () => {
 
 describe("domain indexing", () => {
   it("hides the temporary host until indexing is enabled", () => {
-    expect(robotsTxt("https://example.workers.dev", false)).toContain("Disallow: /");
-    expect(sitemapXml("https://promovers.bg")).toContain("https://promovers.bg/privacy");
+    const hidden = robotsTxt("https://promovers.vasileva-silvena.workers.dev", false);
+    expect(hidden).toContain("Allow: /");
+    expect(hidden).not.toContain("Disallow: /");
+    expect(hidden).not.toContain("Sitemap:");
+    const visible = sitemapXml("https://promovers.bg");
+    expect(visible).toContain("https://promovers.bg/privacy");
+    expect(visible).toContain("https://promovers.bg/cookies");
+    expect(visible).not.toContain("/api/");
     const target = redirectTarget(new URL("https://promovers.example.workers.dev/privacy"), {
       enabled: true,
       primaryOrigin: "https://promovers.bg",

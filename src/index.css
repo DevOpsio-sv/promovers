@@ -196,14 +196,7 @@ textarea.field {
   font-weight: 600;
 }
 
-@media (min-width: 1024px) {
-  .hero-photo {
-    aspect-ratio: 16 / 10;
-    background-image: image-set(
-      url("/images/hero-960.webp") 1x,
-      url("/images/hero-1280.webp") 2x
-    );
-    background-position: center;
-    background-size: cover;
-  }
+.hero-photo {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
 }
