@@ -272,6 +272,7 @@ textarea.field {
   height: 100%;
   margin-inline: auto;
   padding-inline: 16px;
+  box-sizing: border-box;
 }
 
 .brand {
@@ -351,6 +352,7 @@ textarea.field {
   gap: 6px;
   height: 40px;
   padding: 0 16px 0 18px;
+  box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: 999px;
   background: var(--pm-accent);
@@ -452,7 +454,7 @@ textarea.field {
   .site-header-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    padding-inline: clamp(20px, 3vw, 36px);
+    padding-inline: clamp(24px, 3vw, 40px);
   }
 
   .site-nav,
@@ -509,9 +511,10 @@ textarea.field {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  width: min(640px, 100%);
+  width: 100%;
   margin-inline: auto;
   padding: 22px 16px 8px;
+  box-sizing: border-box;
 }
 
 .hero-kicker {
@@ -559,6 +562,7 @@ textarea.field {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
   height: 48px;
   padding: 0 18px;
   border: 1px solid transparent;
@@ -708,7 +712,7 @@ textarea.field {
   }
 
   .site-header-bar {
-    width: min(640px, 100%);
+    width: 100%;
   }
 
   .hero-layout {
@@ -736,6 +740,17 @@ textarea.field {
 @media (min-width: 480px) and (max-width: 959px) {
   .hero-media {
     height: 210px;
+  }
+}
+
+@media (min-width: 720px) and (max-width: 959px) {
+  .site-header-bar,
+  .hero-layout {
+    padding-inline: 24px;
+  }
+
+  .hero-media {
+    margin-inline: 24px;
   }
 }
 
@@ -789,6 +804,7 @@ textarea.field {
 .calc-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 8px;
 }
 
@@ -798,8 +814,10 @@ textarea.field {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 100%;
   min-height: 52px;
   min-width: 0;
+  box-sizing: border-box;
   padding: 8px 10px;
   border: 1px solid var(--pm-line);
   border-radius: var(--pm-radius-tile);
@@ -959,7 +977,7 @@ textarea.field {
 
 .price-panel-compact {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 14px;
 }
 
@@ -974,6 +992,7 @@ textarea.field {
   place-items: center;
   width: 58px;
   height: 58px;
+  margin-top: 2px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.12);
   color: white;
@@ -1068,15 +1087,17 @@ html.dialog-open body {
   box-sizing: border-box;
   color: var(--pm-ink);
   background: #f7f6f3;
-  padding: 52px 16px 40px;
+  padding: 52px 0 40px;
 }
 
 .services-layout {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  box-sizing: border-box;
   width: min(1180px, 100%);
   margin-inline: auto;
+  padding-inline: 16px;
 }
 
 .services-kicker {
@@ -1114,6 +1135,7 @@ html.dialog-open body {
 .service-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -1127,6 +1149,8 @@ html.dialog-open body {
   align-items: center;
   gap: 12px;
   min-height: 96px;
+  height: 100%;
+  box-sizing: border-box;
   padding: 14px 42px 14px 14px;
   border: 1px solid rgba(18, 77, 64, 0.1);
   border-radius: 16px;
@@ -1154,7 +1178,11 @@ html.dialog-open body {
 }
 
 .service-card-copy {
+  display: flex;
   min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 42px;
 }
 
 .service-card-title {
@@ -1257,9 +1285,10 @@ html.dialog-open body {
 
 .process-steps li {
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 28px 32px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   min-width: 0;
 }
 
@@ -1274,6 +1303,7 @@ html.dialog-open body {
 .process-index {
   width: 28px;
   height: 28px;
+  margin-top: 2px;
   background: var(--pm-accent);
   color: white;
   font-size: 13px;
@@ -1290,7 +1320,7 @@ html.dialog-open body {
 
 .process-copy {
   min-width: 0;
-  padding-top: 2px;
+  padding-top: 6px;
 }
 
 .process-title,
@@ -1314,13 +1344,17 @@ html.dialog-open body {
 }
 
 @media (min-width: 720px) {
-  .services-screen {
+  .services-layout {
     padding-inline: 24px;
   }
 
   .service-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+  }
+
+  .service-card {
+    align-items: start;
   }
 }
 
@@ -1344,13 +1378,14 @@ html.dialog-open body {
     flex-direction: column;
     height: 100svh;
     scroll-margin-top: 0;
-    padding: calc(var(--header-h) + clamp(14px, 2.2vh, 28px)) clamp(24px, 3vw, 40px) clamp(16px, 2.6vh, 32px);
+    padding: calc(var(--header-h) + clamp(14px, 2.2vh, 28px)) 0 clamp(16px, 2.6vh, 32px);
   }
 
   .services-layout {
     height: 100%;
     justify-content: space-between;
     gap: clamp(16px, 2vh, 28px);
+    padding-inline: clamp(24px, 3vw, 40px);
   }
 
   .service-grid {
@@ -1371,7 +1406,7 @@ html.dialog-open body {
   .process-steps li:not(:last-child)::after {
     content: "";
     position: absolute;
-    top: 14px;
+    top: 16px;
     right: calc(clamp(18px, 2.4vw, 36px) / -2);
     width: 16px;
     height: 1px;
@@ -1484,8 +1519,8 @@ html.dialog-open body {
 .service-dialog-close {
   position: absolute;
   z-index: 1;
-  top: 14px;
-  right: 14px;
+  top: 16px;
+  right: 16px;
   display: grid;
   width: 36px;
   height: 36px;
@@ -1515,7 +1550,7 @@ html.dialog-open body {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding-right: 40px;
+  padding-right: 44px;
 }
 
 .service-dialog-icon {
@@ -1613,6 +1648,7 @@ html.dialog-open body {
 .service-dialog-actions {
   display: flex;
   flex: none;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
   padding: 16px 28px 22px;
@@ -1687,7 +1723,7 @@ html.dialog-open body {
 
   .service-dialog-heading {
     gap: 12px;
-    padding-right: 36px;
+    padding-right: 44px;
   }
 
   .service-dialog-icon {
@@ -1788,6 +1824,7 @@ html.dialog-open body {
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 28px;
+  box-sizing: border-box;
   width: min(1180px, 100%);
   margin-inline: auto;
   padding: 32px 16px 8px;
@@ -1846,9 +1883,10 @@ html.dialog-open body {
 }
 
 .trust-grid li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   min-width: 0;
 }
 
@@ -1865,7 +1903,7 @@ html.dialog-open body {
 
 .trust-copy {
   min-width: 0;
-  padding-top: 1px;
+  padding-top: 8px;
 }
 
 .trust-copy h3 {
@@ -1887,18 +1925,31 @@ html.dialog-open body {
 .faq-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
   gap: 8px;
   margin-top: 14px;
 }
 
 .faq-item {
+  display: flex;
   min-width: 0;
+  flex-direction: column;
   border: 1px solid var(--pm-line);
   border-radius: 14px;
   background: #fff;
 }
 
+.faq-grid:not(:has(.faq-panel[data-open="true"])) .faq-item {
+  height: 100%;
+}
+
+.faq-grid:has(.faq-panel[data-open="true"]) {
+  align-items: start;
+}
+
 .faq-question {
+  display: flex;
+  flex: 1 1 auto;
   margin: 0;
   font: inherit;
 }
@@ -1909,6 +1960,7 @@ html.dialog-open body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  box-sizing: border-box;
   min-height: 48px;
   padding: 11px 12px;
   border: 0;
@@ -1958,7 +2010,7 @@ html.dialog-open body {
 
 .faq-panel p {
   margin: 0;
-  padding: 0 14px 12px;
+  padding: 0 12px 12px;
   color: var(--pm-muted);
   font-size: 14px;
   line-height: 1.45;
@@ -2052,7 +2104,7 @@ html.dialog-open body {
 }
 
 .book-hint {
-  margin: -2px 0 4px;
+  margin: 0 0 4px;
   color: var(--pm-muted);
   font-size: 13px;
   line-height: 1.35;
@@ -2172,6 +2224,7 @@ html.dialog-open body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
   width: 100%;
   min-height: 46px;
   margin-top: 2px;
@@ -2209,7 +2262,7 @@ html.dialog-open body {
 
 .book-privacy svg {
   flex: none;
-  margin-top: 2px;
+  margin-top: 0.2em;
   color: var(--pm-accent);
 }
 
@@ -2303,6 +2356,7 @@ html.dialog-open body {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 20px;
+  box-sizing: border-box;
   width: min(1180px, 100%);
   margin-inline: auto;
   padding: 14px 16px 16px;
@@ -2382,6 +2436,12 @@ html.dialog-open body {
   }
 }
 
+@media (min-width: 960px) {
+  .site-footer-bar {
+    padding-inline: clamp(24px, 3vw, 40px);
+  }
+}
+
 @media (max-width: 719px) {
   .book-secondary {
     width: 100%;
@@ -2443,6 +2503,7 @@ html.dialog-open body {
   .closing-viewport .site-footer-bar {
     flex-wrap: nowrap;
     padding-block: 8px 10px;
+    padding-inline: clamp(24px, 3vw, 40px);
   }
 }
 
