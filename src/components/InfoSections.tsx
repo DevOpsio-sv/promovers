@@ -46,10 +46,13 @@ const QUESTIONS = [
 export function WhyChooseUs() {
   return (
     <section id="why" className="closing-trust" aria-labelledby="why-title">
+       <br />
       <h2 id="why-title" className="closing-title">
         Защо ProMovers
-      </h2>
+      </h2>     
       <p className="closing-lead">Преместването може да бъде лесно, когато разчитате на правилния екип.</p>
+       <br />
+      
       <ul className="trust-grid">
         {REASONS.map((reason) => (
           <li key={reason.title}>
@@ -59,6 +62,7 @@ export function WhyChooseUs() {
             <span className="trust-copy">
               <h3>{reason.title}</h3>
               <p>{reason.text}</p>
+               <br />
             </span>
           </li>
         ))}

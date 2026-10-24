@@ -44,16 +44,18 @@ export function Hero() {
       </div>
       <div className="hero-layout">
         <div className="hero-copy">
-          <p className="hero-kicker">София и близките райони</p>
+          <p className="hero-kicker">София и близките райони</p>                
           <h1 id="page-title" className="hero-title">
             <span className="hero-line">Хамалски и </span>
             <span className="hero-line">транспортни услуги </span>
             <span className="hero-line">в София</span>
           </h1>
+          <br />
           <p className="hero-lead">
             Преместване на домове и офиси, транспорт с бус, извозване на стари мебели и отпадъци.
             Изчислете ориентировъчна цена и изпратете заявка онлайн.
           </p>
+          <br />
           <div className="hero-actions">
             <a className="hero-btn hero-btn-primary" href="#calculator" onClick={(event) => scrollToId(event, "calculator")}>
               Изчисли цена
@@ -63,6 +65,7 @@ export function Hero() {
               Заяви услуга
             </a>
           </div>
+          <br />
           <ul className="hero-trust">
             <li>
               <ShieldCheck aria-hidden="true" size={16} strokeWidth={1.75} />
@@ -118,7 +121,8 @@ export function ServiceCards() {
           <h2 id="services-title" className="services-title">
             Услуги в София
           </h2>
-          <p className="services-lead">Изберете какво ви трябва. Цената се изчислява веднага в калкулатора.</p>
+          <p className="services-lead">Изберете услуга и цената ще се изчисли в калкулатора.</p>
+           <br />
         </header>
 
         <ul className="service-grid">
@@ -151,17 +155,19 @@ export function ServiceCards() {
                   <p id={summaryId} className="service-card-summary">
                     {service.summary}
                   </p>
-                </div>
+                </div>               
               </li>
             );
           })}
         </ul>
 
         <section id="how" className="services-process" aria-labelledby="how-title">
+           <br />
           <p className="services-kicker">Как работи</p>
           <h2 id="how-title" className="services-process-title">
             Бързо, лесно и без излишни формалности.
           </h2>
+            <br />
           <ol className="process-steps">
             {STEPS.map((step, index) => (
               <li key={step.title}>
